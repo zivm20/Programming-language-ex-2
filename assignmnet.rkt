@@ -146,7 +146,7 @@ alternative way
 
 
 
-
+;question 3 B iii
 ;; evaluates AE expressions to numbers 
 (: eval : AE -> Number) 
 (define (eval expr) 
