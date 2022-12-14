@@ -35,8 +35,9 @@ alternative way
 (test (sum-of-squares '(2)) => 4) 
 (test (sum-of-squares '(1)) => 1) 
 (test (sum-of-squares '(2 3 4 5)) => 54) 
-
-
+(test (sum-of-squares '(2 3 4 5.0)) => 54.0) 
+(test (sum-of-squares '(2 3 4 -5.0)) => 54.0) 
+(test (sum-of-squares '(2 3 4 -5.0 0.5)) => 54.25) 
 
 
 ;question 3 A
@@ -59,9 +60,7 @@ alternative way
     polyX ;finally return polyX
 )
 
-#|
-    ---------- add more(?) ----------
-|#
+
 (define p2345 (createPolynomial '(2 3 4 5))) 
 (test (p2345 0) =>  
    (+ (* 2 (expt 0 0)) (* 3 (expt 0 1)) (* 4 (expt 0 2)) (* 5 (expt 0 3)))) 
@@ -72,10 +71,63 @@ alternative way
 (test (p2345 11) => 
     (+ (* 2 (expt 11 0)) (* 3 (expt 11 1)) (* 4 (expt 11 2)) (* 5 (expt 11 3)))) 
 
+(test (p2345 -11) => 
+    (+ (* 2 (expt -11 0)) (* 3 (expt -11 1)) (* 4 (expt -11 2)) (* 5 (expt -11 3)))) 
 
-(define p536 (createPolynomial '(5 3 6))) 
+
+(define p536 (createPolynomial '(5 -3 6))) 
 (test (p536 11) => 
-    (+ (* 5 (expt 11 0)) (* 3 (expt 11 1)) (* 6 (expt 11 2)))) 
+    (+ (* 5 (expt 11 0)) (* -3 (expt 11 1)) (* 6 (expt 11 2)))) 
+
+(test (p536 -11) => 
+    (+ (* 5 (expt -11 0)) (* -3 (expt -11 1)) (* 6 (expt -11 2)))) 
+
+(test (p536 0) => 
+    (+ (* 5 (expt 0 0)) (* -3 (expt 0 1)) (* 6 (expt 0 2)))) 
+
+
+(define p504 (createPolynomial '(5 0 4))) 
+(test (p504 11) => 
+    (+ (* 5 (expt 11 0)) (* 0 (expt 11 1)) (* 4 (expt 11 2)))) 
+
+(test (p504 -11) => 
+    (+ (* 5 (expt -11 0)) (* 0 (expt -11 1)) (* 4 (expt -11 2)))) 
+    
+(test (p504 0) => 
+    (+ (* 5 (expt 0 0)) (* 0 (expt 0 1)) (* 4 (expt 0 2)))) 
+
+
+(define p500 (createPolynomial '(5 0 0))) 
+(test (p500 11) => 
+    (+ (* 5 (expt 11 0)) (* 0 (expt 11 1)) (* 0 (expt 11 2)))) 
+
+(test (p500 -11) => 
+    (+ (* 5 (expt -11 0)) (* 0 (expt -11 1)) (* 0 (expt -11 2)))) 
+    
+(test (p500 0) => 
+    (+ (* 5 (expt 0 0)) (* 0 (expt 0 1)) (* 0 (expt 0 2)))) 
+
+
+(define p030 (createPolynomial '(0 3 0))) 
+(test (p030 11) => 
+    (+ (* 0 (expt 11 0)) (* 3 (expt 11 1)) (* 0 (expt 11 2)))) 
+
+(test (p030 -11) => 
+    (+ (* 0 (expt -11 0)) (* 3 (expt -11 1)) (* 0 (expt -11 2)))) 
+    
+(test (p030 0) => 
+    (+ (* 0 (expt 0 0)) (* 3 (expt 0 1)) (* 0 (expt 0 2)))) 
+
+
+(define p000 (createPolynomial '(0 0 0))) 
+(test (p000 11) => 
+    (+ (* 0 (expt 11 0)) (* 0 (expt 11 1)) (* 0 (expt 11 2)))) 
+
+(test (p000 -11) => 
+    (+ (* 0 (expt -11 0)) (* 0 (expt -11 1)) (* 0 (expt -11 2)))) 
+    
+(test (p000 0) => 
+    (+ (* 0 (expt 0 0)) (* 0 (expt 0 1)) (* 0 (expt 0 2)))) 
 
 
 (define p_0 (createPolynomial '())) 
@@ -131,19 +183,32 @@ alternative way
     )
 ) 
 
-#|
-    ---------- add more(?) ----------
-|#
+
 (test (parse "{{poly 1 2 3} {1 2 3}}") => 
     (Poly (list (Num 1) (Num 2) (Num 3)) 
           (list (Num 1) (Num 2) (Num 3)))) 
 
-(test (parse "{{poly } {1 2} }") =error> 
-    "parse: at least one coefficient is required in ((poly) (1 2))") 
+(test (parse "{{poly -1 4} {0 -3 5 7}}") => 
+    (Poly (list (Num -1) (Num 4)) 
+          (list (Num 0) (Num -3) (Num 5) (Num 7)))) 
 
+
+
+(test (parse "{{poly 4/5 } {1/2 2/3 3}}") => (Poly (list (Num 4/5) ) (list (Num 1/2) (Num 2/3) (Num 3)))) 
+(test (parse "{{poly 2 3} {4}}") => (Poly (list (Num 2) (Num 3)) (list (Num 4)))) 
+(test (parse "{{poly 1 1 0} {-1 3 3}}") => (Poly (list (Num 1) (Num 1) (Num 0)) (list (Num -1) (Num 3) (Num 3)))) 
+(test (parse "{{poly {/ 4 2}  {- 4 1}} {{- 8 4}}}") => (Poly (list (Div (Num 4) (Num 2)) (Sub (Num 4) (Num 1))) (list (Sub (Num 8) (Num 4))))) 
+(test (parse "{{poly {+ 0 1} 1 {* 0 9}} {{- 4 5} 3 {/ 27 9}}}") => (Poly (list (Add (Num 0) (Num 1)) (Num 1) (Mul (Num 0) (Num 9))) (list (Sub (Num 4) (Num 5)) (Num 3) (Div (Num 27) (Num 9))))) 
+
+
+
+(test (parse "{{poly } {1 2 3} }") =error> 
+    "parse: at least one coefficient is required in ((poly) (1 2 3))") 
 (test (parse "{{poly 1 2} {} }") =error> 
     "parse: at least one point is required in ((poly 1 2) ())") 
-
+(test (parse "{{pol 1 2 3} {1 2 3}}") =error> "parse: bad syntax in ((pol 1 2 3) (1 2 3))")
+(test (parse "{{poly 1 2 3} }") =error> "parse: bad syntax in ((poly 1 2 3))")
+(test (parse "{{poly 4/5} {1/2 2/3 3} {poly 1 2 4} {1 2}}") =error> "parse: bad syntax in ((poly 4/5) (1/2 2/3 3) (poly 1 2 4) (1 2))")
 
 
 ;question 3 B iii
